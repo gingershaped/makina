@@ -1,0 +1,8 @@
+.config
+venv
+makina/__pycache__
+__pycache__
+.replit
+replit.nix
+pyproject.toml
+main.py
