@@ -4,6 +4,7 @@ from makina.instructions import reg
 from makina.displays import SimpleDisplay
 from copy import deepcopy
 from time import sleep
+import argparse
 
 DIRMAP = {Direction.UP: (0, -1), Direction.DOWN: (0, 1), Direction.RIGHT: (1, 1), Direction.LEFT: (1, -1)}
 
@@ -116,3 +117,5 @@ class Automaton:
 def run(program, display):
     world = World.fromData(program, display)
     world.runUntilDone()
+    
+    
