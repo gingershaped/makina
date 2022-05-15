@@ -8,3 +8,4 @@ poetry.lock
 main.py
 *.mk
 tests/
+.breakpoints
