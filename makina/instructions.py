@@ -119,6 +119,9 @@ def printNnl(automaton, text):
 @reg.i("i")
 def input_(automaton):
     return input("Input > ")
+@reg.i("E")
+def numInput(automaton):
+  return int(input("Input >"))
 
 @reg.i("+", 2)
 def add(automaton, n1, n2):
@@ -129,8 +132,18 @@ def multiply(automaton, n1, n2):
 @reg.i("%", 2)
 def modulo(automaton, n1, n2):
     return n1 % n2
+@reg.i("u", 1)
+def increment(automaton, cell):
+  try:
+    automaton.world.memory[cell] += 1
+  except KeyError:
+    automaton.world.memory[cell] = 1
+    return 1
+@reg.i("d", 1)
+def decrement(automaton, cell):
+  automaton.world.memory[cell] -= 1
 
-@reg.i("i", 1)
+@reg.i("m", 1)
 def castToInt(automaton, thing):
     return int(thing)
 @reg.i("s", 1)
@@ -142,6 +155,10 @@ def castToIntInPlace(automaton):
 @reg.i("S")
 def castToStrInPlace(automaton):
     automaton.retval = str(automaton.retval)
+
+@reg.i("L", 1)
+def length(automaton, thing):
+    return len(thing)
 
 @reg.i("l", 2)
 def lessThan(automaton, n2, n1):
@@ -168,6 +185,7 @@ def if_(automaton, condition):
 def jump(automaton):
     automaton.move(automaton.direction)
 @reg.i("U")
+@reg.obeyWhenReading()
 def uturn(automaton):
     automaton.turn(Rotation.UTURN)
     automaton.move()
