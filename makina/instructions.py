@@ -16,9 +16,14 @@ class InstructionRegistry:
         for l in LITERALS:
             self.reg[l] = partial(self.startLiteral, l, *LITERALS[l])
     def register(self, name, func):
+        if name in self.reg:
+            raise Exception("There is already an instruction named " + name + "!")
         self.reg[name] = func
     def exec(self, name, automaton):
         if automaton.state == State.READING and name != ";":
+            if name in HALT:
+                automaton.retcache = None
+                automaton.halt()
             if name in self.reg:
                  if self.reg[name] in self._obeyWhenReading and not automaton.ignoreNext:
                      return self.reg[name](automaton)
@@ -115,13 +120,17 @@ def print_(automaton, text):
     automaton.world.display.log(text)
 @reg.i("p", 1)
 def printNnl(automaton, text):
-    automaton.world.display.log(text, "")
+    automaton.world.display.log(text, end = "")
 @reg.i("i")
 def input_(automaton):
     return input("Input > ")
 @reg.i("E")
 def numInput(automaton):
   return int(input("Input >"))
+
+@reg.i("T", 2)
+def index(automaton, thing, index):
+    return thing[index]
 
 @reg.i("+", 2)
 def add(automaton, n1, n2):
@@ -138,7 +147,6 @@ def increment(automaton, cell):
     automaton.world.memory[cell] += 1
   except KeyError:
     automaton.world.memory[cell] = 1
-    return 1
 @reg.i("d", 1)
 def decrement(automaton, cell):
   automaton.world.memory[cell] -= 1
