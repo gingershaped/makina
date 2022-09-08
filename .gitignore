@@ -9,3 +9,4 @@ main.py
 *.mk
 tests/
 .breakpoints
+*.txt
