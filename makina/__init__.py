@@ -1,12 +1,26 @@
 import numpy as np
 from makina.constants import *
 from makina.instructions import reg
-from makina.displays import SimpleDisplay
+from makina.displays import *
 from copy import deepcopy
 from time import sleep
 import argparse
 
 DIRMAP = {Direction.UP: (0, -1), Direction.DOWN: (0, 1), Direction.RIGHT: (1, 1), Direction.LEFT: (1, -1)}
+DISPLAYS = {
+    "simple": {
+        "desc": "(default) No graphics, just I/O. Fastest by far.",
+        "display": SimpleDisplay
+    },
+    "fancy": {
+        "desc": "Display ASCII-art of the program running in your terminal.",
+        "display": FancyDisplay
+    },
+    "turtle": {
+        "desc": "(requires turtle module) Display a graphical version of the program running.",
+        "display": TurtleDisplay
+    }
+}
 
 class World:
     @classmethod
@@ -63,6 +77,7 @@ class Automaton:
         self.ignoreNext = False
 
         self.world.tickingList.append(self)
+        self.world.display.onNewAutomaton(self)
 
     def step(self):
         if self.state == State.NORMAL or self.state == State.READING:
@@ -94,6 +109,7 @@ class Automaton:
             direction = self.direction
         dm = DIRMAP[direction]
         self.position[dm[0]] += dm[1]
+        self.world.display.onAutomatonMove(self, direction)
         if self.position[0] < 0 or self.position[0] > self.world.array.shape[0] or self.position[1] < 0 or self.position[1] > self.world.array.shape[1]:
             self.halt()
     def turn(self, rotation):
@@ -107,15 +123,44 @@ class Automaton:
     def halt(self):
         self.world.tickingList.remove(self)
         self.state = State.HALTED
+        self.world.display.onAutomatonHalted(self)
 
     def spawnChild(self):
         child = Automaton(self.world, deepcopy(self.position), deepcopy(self.direction))
         self.children.append(child)
+        self.world.display.onAutomatonChild(self, child)
         return child
-        
+
 
 def run(program, display):
     world = World.fromData(program, display)
     world.runUntilDone()
     
+def main():
+    import argparse
+
+    class DisplayAction(argparse.Action):
+        def __init__(self, option_strings, dest):
+            super(DisplayAction, self).__init__(
+                option_strings=option_strings,
+                dest=dest,
+                const="list",
+                nargs="?",
+                default="simple",
+                help="The display to use, leave blank for a list of displays"
+            )
+        def __call__(self, parser, namespace, values, option_string=None):
+            if values == "list":
+                print("Available displays:")
+                for d in DISPLAYS:
+                    print(d, "-", DISPLAYS[d]["desc"])
+                parser.exit()
+            else:
+                setattr(namespace, self.dest, values)
     
+    parser = argparse.ArgumentParser(description = "Run makina programs")
+    parser.add_argument('file', metavar='file', help='A path to the file to run')
+    parser.add_argument('-d', '--display', action=DisplayAction)
+    args = parser.parse_args()
+    display = DISPLAYS[args.display]["display"]
+    run(open(args.file, "r").read(), display = display)
