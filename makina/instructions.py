@@ -24,6 +24,7 @@ class InstructionRegistry:
             if name in HALT:
                 automaton.retcache = None
                 automaton.halt()
+                return
             if name in self.reg:
                  if self.reg[name] in self._obeyWhenReading and not automaton.ignoreNext:
                      return self.reg[name](automaton)
@@ -121,6 +122,9 @@ def print_(automaton, text):
 @reg.i("p", 1)
 def printNnl(automaton, text):
     automaton.world.display.log(text, end = "")
+@reg.i("r")
+def printReturn(automaton):
+    automaton.world.display.log(automaton.retval)
 @reg.i("i")
 def input_(automaton):
     return input("Input > ")
@@ -138,6 +142,12 @@ def add(automaton, n1, n2):
 @reg.i("*", 2)
 def multiply(automaton, n1, n2):
     return n1 * n2
+@reg.i("-", 2)
+def subtract(automaton, n1, n2):
+    return n1 - n2
+@reg.i("/", 2)
+def floordiv(automaton, n1, n2):
+    return n1 // n2
 @reg.i("%", 2)
 def modulo(automaton, n1, n2):
     return n1 % n2
@@ -206,6 +216,7 @@ def read(automaton, cell):
     if cell not in automaton.world.memory:
         return 0
     return automaton.world.memory[cell]
+
 @reg.i("x")
 def memdump(automaton):
     automaton.world.display.log(automaton.world.memory)

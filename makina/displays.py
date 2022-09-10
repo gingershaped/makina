@@ -1,10 +1,12 @@
+import traceback
+from time import sleep
+from sys import stderr
+from makina.constants import *
+
 try:
     import turtle
 except ImportError:
     turtle = None
-from time import sleep
-from sys import stderr
-from makina.constants import *
 
 class Display:
     def __init__(self, world):
@@ -19,7 +21,10 @@ class Display:
     def blit(self):
         pass
     def error(self, text, pos=None):
-        print(text, file=stderr)
+        if issubclass(type(text), Exception):
+            traceback.print_exc()
+        else:
+            print(text, file=stderr)
         if pos:
             print("at position:", pos, file=stderr)
 
