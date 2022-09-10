@@ -125,7 +125,6 @@ def jump(automaton):
 def uturn(automaton):
     automaton.turn(Rotation.UTURN)
     automaton.move()
-
 @reg.i("P", 1)
 def print_(automaton, text):
     automaton.world.display.log(text)
