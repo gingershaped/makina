@@ -116,6 +116,15 @@ def hblock(automaton):
 def iblock(automaton):
     if automaton.direction in [Direction.UP, Direction.DOWN]:
         automaton.halt()
+@reg.i("J")
+@reg.obeyWhenReading()
+def jump(automaton):
+    automaton.move(automaton.direction)
+@reg.i("U")
+@reg.obeyWhenReading()
+def uturn(automaton):
+    automaton.turn(Rotation.UTURN)
+    automaton.move()
 
 @reg.i("P", 1)
 def print_(automaton, text):
@@ -201,16 +210,6 @@ def if_(automaton, condition):
         automaton.direction = Direction((automaton.direction.value - 1) % 4)
     else:
         automaton.direction = Direction((automaton.direction.value + 1) % 4)
-
-@reg.i("J")
-@reg.obeyWhenReading()
-def jump(automaton):
-    automaton.move(automaton.direction)
-@reg.i("U")
-@reg.obeyWhenReading()
-def uturn(automaton):
-    automaton.turn(Rotation.UTURN)
-    automaton.move()
 
 @reg.i("w", 2)
 def write(automaton, data, cell):
