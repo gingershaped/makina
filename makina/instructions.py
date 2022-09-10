@@ -191,6 +191,9 @@ def lessThanOrEqualTo(automaton, n2, n1):
 @reg.i("o", 2)
 def greaterThanOrEqualTo(automaton, n2, n1):
     return n1 >= n2
+@reg.i("=", 2)
+def equalTo(automaton, n2, n1):
+    return n1 == n2
 
 @reg.i("?", 1, [Rotation.STRAIGHT])
 def if_(automaton, condition):
