@@ -10,3 +10,4 @@ main.py
 tests/
 .breakpoints
 *.txt
+dist/
