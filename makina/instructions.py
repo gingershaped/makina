@@ -82,7 +82,8 @@ def semicolon(automaton):
 @reg.i(":")
 @reg.obeyWhenReading()
 def colon(automaton):
-    automaton.ignoreNext = True
+    if automaton.state == State.READING:
+        automaton.ignoreNext = True
 
 @reg.i("^")
 @reg.obeyWhenReading()
