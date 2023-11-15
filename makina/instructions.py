@@ -21,7 +21,7 @@ class InstructionRegistry:
         self.reg[name] = func
     def exec(self, name, automaton):
         if automaton.state == State.READING and name != ";":
-            if name in HALT:
+            if name in HALT and not automaton.ignoreNext:
                 automaton.retcache = None
                 automaton.halt()
                 return
